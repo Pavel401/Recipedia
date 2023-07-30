@@ -38,7 +38,7 @@ class SpoonacularConnectionProvider(ExperimentalBaseConnection[requests.Session]
             requests.Session: The requests session object.
         """
         return self._resource
-
+    
     def query(self, recipes, ttl: int = 3600):
         """
        Fetches recipes for the specified search query from the Spoonacular API.

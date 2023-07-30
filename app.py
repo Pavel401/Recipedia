@@ -1,3 +1,4 @@
+from connection2 import SpoonacularMetadataConnectionProvider
 import streamlit as st
 from connection import SpoonacularConnectionProvider
 from requests import get
@@ -70,43 +71,7 @@ def main():
             st.error(f"Error occurred: {e}")
 
 
-    
-def getRecipeData(query):
-   
-    recipe_data = {}
-  
-    url = f'https://api.spoonacular.com/recipes/{query}/information'
-    
-    params = {
-        'includeNutrition': False,
-        'apiKey': '154d948da7aa4ecaab36c89c5cdd7522',
-        'id': query,
 
-    }
-
-    print(f"Fetching recipe data for {query}...")
-    print(f"URL is {url}")
-    print(f"Params are {params}")
-
-    response = get(url, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        
-        recipe_data = {
-            "title": data['title'],
-            "pricePerServing": data['pricePerServing'],
-            "healthScore": data['healthScore'],
-            "instructions": data['instructions'],
-            "image": data['image'],
-            "sourceUrl": data['sourceUrl'],
-            "readyInMinutes": data['readyInMinutes'],
-            "glutenFree":data['glutenFree'],
-        }
-    else:
-        raise Exception(f"Failed to fetch recipe data for {query}.")
-
-    return recipe_data
 
 def display_recipes_data(recipes_data):
    
@@ -119,11 +84,13 @@ def display_recipes_data(recipes_data):
             st.image(data['image'])
             st.markdown(f"## Recipe Name: {data['title']}")
             st.markdown(f"## Recipe ID: {data['id']}")
+            api_connection = SpoonacularMetadataConnectionProvider(connection_name='recipeProvider')
+
 
             with st.expander("See Recipe Details"):
                 try:
-                   
-                    recipe_data = getRecipeData(data['id'])
+                    recipe_data = api_connection.query(data['id'])
+
 
                     # Display recipe details
                     st.image(recipe_data['image'])
